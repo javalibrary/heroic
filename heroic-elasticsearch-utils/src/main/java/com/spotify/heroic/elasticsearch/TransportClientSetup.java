@@ -48,9 +48,17 @@ public class TransportClientSetup implements ClientSetup {
         this.seeds = seeds(Optional.fromNullable(seeds).or(DEFAULT_SEEDS));
     }
 
+    /*
+       client.transport.sniff: true allows for dynamically adding of new hosts and removal of old
+        ones. This works by first connecting to the seed nodes and using the internal cluster
+        state API to discover available nodes.
+     */
     @Override
     public ClientWrapper setup() throws Exception {
-        final Settings settings = Settings.builder().put("cluster.name", clusterName).build();
+        final Settings settings = Settings.builder()
+          .put("cluster.name", clusterName)
+          .put("client.transport.sniff", true)
+          .build();
 
         final TransportClient client = new PreBuiltTransportClient(settings);
 
